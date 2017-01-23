@@ -12,7 +12,7 @@
 #include <ctype.h>
 
 #define ERROR(e) { perror(e); exit(EXIT_FAILURE); }
-#define SERVER_PORT 2000
+#define SERVER_PORT 3000
 #define QUEUE_SIZE 5
 
 //Dlugosc wiadomosci, max liczba klientow, max czas od ostatniej wiadomosci (przekroczenie oznacza usuniecie klienta)
@@ -975,14 +975,14 @@ zwraca 0 - gdy udalo sie odebrac wiadomosc, 1 - gdy klient zerwal polaczenie
 int read_loop(int fd, char * buffer)
 {
     int i = 0;
-	int error = 0;
+int error = 0;
     while(i < maxn)
     {
 		i += read(fd, buffer+i, maxn-i);
-		if(i == 0)
+		if(i <= 0)
 		{
 			error++;
-			if(error >= 10)
+			if(error >= 10 || i == -1)
 			{
 				printf("Klient zerwal polaczenie\n");
 				return 1;
@@ -1043,7 +1043,7 @@ int main(int argc, char** argv)
 		timeout.tv_usec = 0;
 		if ((rc = select(fdmax+1, &rmask, &wmask, (fd_set*)0, &timeout)) < 0)
 		  ERROR("select()")
-
+		
 		if (rc == 0)
 		{
 			  printf("time out\n");
@@ -1093,9 +1093,9 @@ int main(int argc, char** argv)
 			if (FD_ISSET(i, &wmask))
 			{
 				fda -= 1;
+				write_loop(i);
 				printf("%d new write: %s\n", i, client[i].ans);
 				
-				write_loop(i);
 				FD_CLR(i, &allwmask);
 				FD_SET(i, &allrmask);
 			}
