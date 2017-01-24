@@ -42,6 +42,7 @@ namespace Backgammon
             opponentnick = "guest";
             opponentsearch = 0;
             setButton(this.NewGameButton, false);
+
         }
 
         //Przerzuca inne okna, gdy aktywne razem z oknem gry
@@ -50,6 +51,21 @@ namespace Backgammon
             if (login != null && login.Visible == true)
             {
                 login.Activate();
+            }
+        }
+
+        //Ustawia LabelVisible
+        delegate void setLabelVisibleCallback(Label label, bool visible);
+        public void setLabelVisible(Label label, bool visible)
+        {
+            if (label.InvokeRequired)
+            {
+                setLabelVisibleCallback labelCallback = new setLabelVisibleCallback(setLabelVisible);
+                this.Invoke(labelCallback, label, visible);
+            }
+            else
+            {
+                label.Visible = visible;
             }
         }
 
@@ -71,6 +87,13 @@ namespace Backgammon
         //Tworzy nowa gre
         public void NewGame(int playerscore, int opponentscore, int color)
         {
+            string col = "red";
+            if (color == 0)
+            {
+                col = "white";
+            }
+            MessageBox.Show("Opponent found. Your color: " + col);
+            setButton(NewGameButton, true);
             game = new Classes.Game(clientnick, playerscore, opponentnick, opponentscore, color);
             if(color == 0)
             {
@@ -85,14 +108,7 @@ namespace Backgammon
                 setLabelText(PlayerRedScore, playerscore.ToString());
                 setLabelText(PlayerWhiteNick, opponentnick);
                 setLabelText(PlayerWhiteScore, opponentscore.ToString());
-            }
-            string col = "red";
-            if(color == 0)
-            {
-                col = "white";
-            }
-            MessageBox.Show("Opponent found. Your color: " + col);
-            setButton(NewGameButton, true);
+            } 
         }
 
         //Konczy program
@@ -164,7 +180,18 @@ namespace Backgammon
         private void NewGameButton_Click(object sender, EventArgs e)
         {
             setButton(this.NewGameButton, false);
-            servercommunicator.PreaperMessageCI(40);   
+            if(game == null)
+            {
+                servercommunicator.PreaperMessageCI(40);
+            }
+            else
+            {
+                game = null;
+                setButtonVisible(this.RollDicesButton, false);
+                setLabelVisible(OpponentSearchLabel, true);
+                servercommunicator.PreaperMessageCG(70);
+                servercommunicator.PreaperMessageCI(40);
+            }
         }
 
         //Roll Dices klikniete

@@ -262,6 +262,7 @@ namespace Backgammon
                     } break;
                 case 40:
                     {
+                        client.setLabelVisible(client.OpponentSearchLabel, true);
                     } break;
                 default:
                     {
@@ -453,6 +454,7 @@ namespace Backgammon
                     {
                         timermessage = 0;
                         client.opponentnick = mess.Substring(4, 10);
+                        client.setLabelVisible(client.OpponentSearchLabel, false);
                         PreaperMessageCG(10);
                     } break;
                 case 41:
@@ -483,31 +485,48 @@ namespace Backgammon
                 case 11:
                     {
                         client.game.SetStartDices(int.Parse(mess.Substring(4, 1)), int.Parse(mess.Substring(5, 1)));
-                        if (int.Parse(mess.Substring(4, 1)) == 0 || int.Parse(mess.Substring(5, 1)) == 0 || int.Parse(mess.Substring(4, 1)) == int.Parse(mess.Substring(5, 1)))
+                        if (int.Parse(mess.Substring(4, 1)) == 0 || int.Parse(mess.Substring(5, 1)) == 0)
                         {
                             timermessage = 2;
                         }
                         else
                         {
                             timermessage = 0;
-                            int gamestart = client.game.GameStart();
-
-                            if (gamestart == 0)
+                            if(int.Parse(mess.Substring(4, 1)) != int.Parse(mess.Substring(5, 1)))
                             {
-                                timermessage = 3;
-                                MessageBox.Show("Opponent turn");
-                            }
+                                if (int.Parse(mess.Substring(4, 1)) > int.Parse(mess.Substring(5, 1)))
+                                {
+                                    MessageBox.Show("Your turn");
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Opponent turn");
+                                }
+                                
+                                int gamestart = client.game.GameStart();
+                                
+                                if (gamestart == 0)
+                                {
+                                    timermessage = 3;
+                                    
+                                }
 
-                            if (gamestart == 1)
+                                if (gamestart == 1)
+                                {
+                                    client.setButtonVisible(client.RollDicesButton, true);
+                                    
+                                }
+
+                                if (gamestart == 2)
+                                {
+                                    client.setButtonVisible(client.RollDicesButton, true);
+                                    timermessage = 0;
+                                }
+                            }
+                            else
                             {
                                 client.setButtonVisible(client.RollDicesButton, true);
-                                MessageBox.Show("Your turn");
-                            }
-
-                            if (gamestart == 2)
-                            {
-                                client.setButtonVisible(client.RollDicesButton, true);
-                                timermessage = 2;
+                                timermessage = 0;
                             }
                         }
                     } break;
@@ -644,6 +663,8 @@ namespace Backgammon
                 case 60:
                     {
                         error = "Opponent left game";
+                        client.game = null;
+                        client.setButton(client.NewGameButton, true);
                     } break;
                 default:
                     {

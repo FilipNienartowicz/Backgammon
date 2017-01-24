@@ -19,8 +19,10 @@ namespace Backgammon
         public GameGraphics()
         {
             try{
-                BoardImage = (Bitmap) Image.FromFile(@"Grafika\Plansza.png", true);
-                
+                BoardImage = new Bitmap((Bitmap)Image.FromFile(@"Grafika\Plansza.png", true), new Size(840, 860));
+
+                board = new Bitmap((Bitmap)Image.FromFile(@"Grafika\Plansza.png", true), new Size(840, 860));
+
                 DiceImage = new Bitmap[2,7];
                 for (int i = 1; i < 7; i++)
                 {
@@ -50,14 +52,11 @@ namespace Backgammon
         //Przygotowuje grafike planszy
         public Bitmap CreateGameBoard(Classes.Game game)
         {
-            board = null;
-            board = new Bitmap(BoardImage);
+            Graphics g = Graphics.FromImage(board);
+   
+            g.DrawImage(BoardImage, new Point(0,0));
             if (game != null)
             {
-                Graphics g = Graphics.FromImage(board);
-   
-                //todo - znaczniki mozliwych ruchow?
-                
                 //wyswietla pionki i zaznaczone pole
                 for (int i = 0; i < 6; i++)
                 {

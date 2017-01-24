@@ -41,7 +41,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.PlayerRedScore = new System.Windows.Forms.Label();
             this.RollDicesButton = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
+            this.OpponentSearchLabel = new System.Windows.Forms.Label();
             this.Serwertimer = new System.Windows.Forms.Timer(this.components);
             this.WaitOpponentDicesLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.Board)).BeginInit();
@@ -112,10 +112,10 @@
             this.RollDicesButton.UseVisualStyleBackColor = true;
             this.RollDicesButton.Click += new System.EventHandler(this.RollDicesButton_Click);
             // 
-            // label3
+            // OpponentSearchLabel
             // 
-            resources.ApplyResources(this.label3, "label3");
-            this.label3.Name = "label3";
+            resources.ApplyResources(this.OpponentSearchLabel, "OpponentSearchLabel");
+            this.OpponentSearchLabel.Name = "OpponentSearchLabel";
             // 
             // Serwertimer
             // 
@@ -132,9 +132,10 @@
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoValidate = System.Windows.Forms.AutoValidate.EnablePreventFocusChange;
             this.ControlBox = false;
             this.Controls.Add(this.WaitOpponentDicesLabel);
-            this.Controls.Add(this.label3);
+            this.Controls.Add(this.OpponentSearchLabel);
             this.Controls.Add(this.RollDicesButton);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.PlayerRedScore);
@@ -169,7 +170,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label PlayerRedScore;
         public System.Windows.Forms.Button RollDicesButton;
-        private System.Windows.Forms.Label label3;
+        public System.Windows.Forms.Label OpponentSearchLabel;
         private System.Windows.Forms.Timer Serwertimer;
         private System.Windows.Forms.Label WaitOpponentDicesLabel;
     }
