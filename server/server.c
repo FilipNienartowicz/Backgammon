@@ -1117,7 +1117,7 @@ int main(int argc, char** argv)
 				}
 			}
 		}
-		printf("end\n");
+		printf("end\n\n");
 	}
 	close(sfd);
 	return EXIT_SUCCESS;
