@@ -69,6 +69,7 @@ struct SMoveList* AddMoveToList(struct SMoveList* list, struct SMoveList* elemen
 	}
 }
 
+
 //Tworzy element listy z wiadomosci i dodaje go na koniec listy
 struct SMoveList* AddMoveToListMess(struct SMoveList* list, int color, char mess[15])
 {

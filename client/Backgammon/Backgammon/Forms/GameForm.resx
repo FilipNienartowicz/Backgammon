@@ -27345,6 +27345,9 @@
         OYMAAAAASUVORK5CYII=
 </value>
   </data>
+  <data name="Board.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
   <data name="Board.InitialImage" type="System.Resources.ResXNullRef, System.Windows.Forms">
     <value />
   </data>
@@ -27613,34 +27616,34 @@
   <data name="&gt;&gt;RollDicesButton.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
-  <data name="label3.AutoSize" type="System.Boolean, mscorlib">
+  <data name="OpponentSearchLabel.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
-  <data name="label3.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="OpponentSearchLabel.Location" type="System.Drawing.Point, System.Drawing">
     <value>858, 329</value>
   </data>
-  <data name="label3.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="OpponentSearchLabel.Size" type="System.Drawing.Size, System.Drawing">
     <value>130, 17</value>
   </data>
-  <data name="label3.TabIndex" type="System.Int32, mscorlib">
+  <data name="OpponentSearchLabel.TabIndex" type="System.Int32, mscorlib">
     <value>11</value>
   </data>
-  <data name="label3.Text" xml:space="preserve">
+  <data name="OpponentSearchLabel.Text" xml:space="preserve">
     <value>Opponent search...</value>
   </data>
-  <data name="label3.Visible" type="System.Boolean, mscorlib">
+  <data name="OpponentSearchLabel.Visible" type="System.Boolean, mscorlib">
     <value>False</value>
   </data>
-  <data name="&gt;&gt;label3.Name" xml:space="preserve">
-    <value>label3</value>
+  <data name="&gt;&gt;OpponentSearchLabel.Name" xml:space="preserve">
+    <value>OpponentSearchLabel</value>
   </data>
-  <data name="&gt;&gt;label3.Type" xml:space="preserve">
+  <data name="&gt;&gt;OpponentSearchLabel.Type" xml:space="preserve">
     <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;label3.Parent" xml:space="preserve">
+  <data name="&gt;&gt;OpponentSearchLabel.Parent" xml:space="preserve">
     <value>$this</value>
   </data>
-  <data name="&gt;&gt;label3.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;OpponentSearchLabel.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
   <metadata name="Serwertimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
@@ -27680,7 +27683,7 @@
     <value>True</value>
   </metadata>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>100</value>
+    <value>25</value>
   </metadata>
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
     <value>8, 16</value>

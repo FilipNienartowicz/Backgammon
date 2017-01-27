@@ -57,6 +57,11 @@ namespace Backgammon.Classes
             {
                 return true;
             }
+            else
+            {
+                playermove.dices[0].i = 0;
+                playermove.dices[0].i = 1;
+            }
             return false;
         }
 
@@ -74,8 +79,8 @@ namespace Backgammon.Classes
 
         public void SetPlayerDices(int dice1, int dice2)
         {
-            playermove.dices[0] = new Dice(dice1);
-            playermove.dices[1] = new Dice(dice2);
+            int color = playermove.color;
+            playermove = new Move(color, dice1, dice2);
         }
 
         public int SelectField(int x, int y, Classes.ClientMove clientmove)

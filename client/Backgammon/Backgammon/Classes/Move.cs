@@ -17,7 +17,7 @@ namespace Backgammon.Classes
         public Move(int color, int dice1, int dice2)
         {
             x2move = false;
-            if(dice1 == dice2)
+            if(dice1 == dice2 && dice1 + dice2 > 0)
             {
                 x2move = true;
             }
