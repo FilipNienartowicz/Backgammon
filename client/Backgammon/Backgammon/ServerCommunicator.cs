@@ -7,8 +7,10 @@ using System.Net;
 using System.Net.Sockets;
 using System.Windows.Forms;
 
+
 namespace Backgammon
 {
+    //Klasa odpowiedzialna za wszelka komunikacje z serwerem 
     public class ServerCommunicator
     {
         public GameForm client;
@@ -26,7 +28,7 @@ namespace Backgammon
             clientmessage = new Queue<string>();
             nowriting = true;
             unpacking = false;
-            timermessage = 0;
+            timermessage = TM_STILL_HERE;
         }
 
         public class SocketStateObject
@@ -50,36 +52,49 @@ namespace Backgammon
             }
         }
 
+        //Stale wskazujace jaka wiadomosc ma byc wysylana przez ServerTimerMessage
+        private const int TM_STILL_HERE = 0;
+        private const int TM_GIVE_OPP = 1;
+        private const int TM_GIVE_START_DICES = 2;
+        private const int TM_GIVE_OPP_DICES = 3;
+        private const int TM_GIVE_OPP_MOVE = 4;
+        private const int TM_NEXT_GAME = 5;
+        private const int TM_NOT_READY = 6;
+
         //Wysylana co jakis czas wiadomosc do serwera (wywolywana przez timer)
         public void ServerTimerMessage()
         {
-            if (clientmessage.Count == 0 && socket != null && nowriting)
+            if (clientmessage.Count == 0 && socket != null && nowriting && !unpacking)
             {
                 switch (timermessage)
                {
-                   case 0:
+                   case TM_STILL_HERE:
                        {
-                           // PreaperMessageCI(30);
+                           PreaperMessageCI(30);
                        }break;
-                   case 1:
+                   case TM_GIVE_OPP:
                        {
                            PreaperMessageCI(40);
                        } break;
-                   case 2:
+                   case TM_GIVE_START_DICES:
                        {
                            PreaperMessageCG(11);
                        } break;
-                   case 3:
+                   case TM_GIVE_OPP_DICES:
                        {
                            PreaperMessageCG(21);
                        } break;
-                   case 4:
+                   case TM_GIVE_OPP_MOVE:
                        {
                            PreaperMessageCG(40);
                        } break;
-                   case 5:
+                   case TM_NEXT_GAME:
                        {
                            PreaperMessageCG(61);
+                       } break;
+                   case TM_NOT_READY:
+                       {
+                           PreaperMessageCG(80);
                        } break;
                    default: { } break;
                 }
@@ -165,7 +180,7 @@ namespace Backgammon
             }
             catch (Exception exc)
             {
-                MessageBox.Show("Serwer został rozłączony!\n");
+                client.NewInfoWidnow("Serwer został rozłączony!\n");
                 Application.Exit();
             }
         }
@@ -178,7 +193,6 @@ namespace Backgammon
                 if (nowriting)
                 {
                     nowriting = false;
-
                     socket.bytessended = 0;
                     socket.m_DataBuf = Encoding.ASCII.GetBytes(mess);
 
@@ -192,8 +206,7 @@ namespace Backgammon
             }
             else
             {
-                string error = "Message to short";
-                MessageBox.Show(error);
+                client.NewInfoWidnow("Message to short");
             }
         }
 
@@ -222,7 +235,7 @@ namespace Backgammon
             }
             catch (Exception exc)
             {
-                MessageBox.Show("Serwer został rozłączony!\n");
+                client.NewInfoWidnow("Serwer został rozłączony!\n");
                 Application.Exit();
             }
         }
@@ -238,7 +251,6 @@ namespace Backgammon
         public void PreaperMessageCI(int code, string clientnick = "")
         {
             bool good = true;
-            string error = ""; 
             string mess = "CI" + code.ToString();
             switch (code)
             {
@@ -251,7 +263,7 @@ namespace Backgammon
                         else
                         {
                             good = false;
-                            error = "Client nick cannot be empty"; 
+                            client.NewInfoWidnow("Client nick cannot be empty"); 
                         }
                     } break;
                 case 20:
@@ -267,16 +279,12 @@ namespace Backgammon
                 default:
                     {
                         good = false;
-                        error = "Unknown client info message"; 
+                        client.NewInfoWidnow("Unknown client info message"); 
                     } break;
             }
             if (good)
             {
                 PreaperMessage(mess);
-            }
-            else
-            {
-                MessageBox.Show(error);
             }
         }
 
@@ -285,7 +293,6 @@ namespace Backgammon
         {
             bool good = true;
             string mess = "CG" + code.ToString();
-            string error = "";
             switch (code)
             {
                 case 10:
@@ -307,13 +314,13 @@ namespace Backgammon
                             mess += from.ToString().PadLeft(2, '0') + to.ToString().PadLeft(2, '0') + endofturn.ToString();
                             if(endofturn > 0)
                             {
-                                timermessage = 3;
+                                timermessage = TM_GIVE_OPP_DICES;
                             }
                         }
                         else
                         {
                             good = false;
-                            error = "Can't make move: from: " + from.ToString() + ", to:" + to.ToString() + ", endofturn: " + endofturn.ToString();
+                            client.NewInfoWidnow("Can't make move: from: " + from.ToString() + ", to:" + to.ToString() + ", endofturn: " + endofturn.ToString());
                         }
                     } break;
                 case 40:
@@ -321,26 +328,35 @@ namespace Backgammon
                     } break;
                 case 50:
                     {
-                        if (winner >= 0)
+                        if (winner >=0)
                         {
                             mess += winner.ToString();
+
+                            if(client.game.player.color == winner)
+                            {
+                                client.NewInfoWidnow("Game end, you win!");
+                            }
+                            else
+                            {
+                                client.NewInfoWidnow("Game end, you lose!");
+                            }
                         }
                         else
                         {
                             good = false;
-                            error = "End of game have to have winner filled";
+                            client.NewInfoWidnow("End of game have to have winner filled");
                         }
                     } break;
                 case 60:
                     {
-                        if (winner >= 0)
+                        if (decision >= 0)
                         {
                             mess += decision.ToString();
                         }
                         else
                         {
                             good = false;
-                            error = "New game have to have decision filled";
+                            client.NewInfoWidnow( "New game have to have decision filled");
                         }
                         //todo
                     } break;
@@ -356,16 +372,12 @@ namespace Backgammon
                 default:
                     {
                         good = false;
-                        error = "Unknown client info message";
+                        client.NewInfoWidnow("Unknown client info message");
                     } break;
             }
             if (good)
             {
                 PreaperMessage(mess);
-            }
-            else 
-            {
-                MessageBox.Show(error);
             }
         }
 
@@ -382,8 +394,7 @@ namespace Backgammon
                 default:
                     {
                         good = false;
-                        string error = "Unknown client info message";
-                        MessageBox.Show(error);
+                        client.NewInfoWidnow("Unknown client info message");
                     } break;
             }
             if(good)
@@ -415,7 +426,7 @@ namespace Backgammon
             }
             else
             {
-                MessageBox.Show("Unknown server message");
+                client.NewInfoWidnow("Unknown server message");
             }
 
             if(servermessage.Count == 0)
@@ -432,7 +443,6 @@ namespace Backgammon
         public void UnpackIMessage(string mess)
         {
             int code = int.Parse(mess.Substring(2, 2));
-            string error = "";
             switch (code)
             {
                 case 10:
@@ -440,8 +450,7 @@ namespace Backgammon
                     } break;
                 case 11:
                     {
-                        error = "Wrong nick";
-                        MessageBox.Show(error);
+                        client.NewInfoWidnow("Wrong nick");
                     } break;
                 case 20:
                     {
@@ -452,7 +461,7 @@ namespace Backgammon
                     } break;
                 case 40:
                     {
-                        timermessage = 0;
+                        timermessage = TM_STILL_HERE;
                         client.opponentnick = mess.Substring(4, 10);
                         client.setLabelVisible(client.OpponentSearchLabel, false);
                         PreaperMessageCG(10);
@@ -460,12 +469,11 @@ namespace Backgammon
                 case 41:
                     {
                         client.OpponentSearchInc();
-                        timermessage = 1;
+                        timermessage = TM_GIVE_OPP;
                     } break;
                 default:
                     {
-                        error = "Unknown server message";
-                        MessageBox.Show(error);
+                        client.NewInfoWidnow("Unknown server message");
                     } break;
             }
         }
@@ -474,7 +482,6 @@ namespace Backgammon
         public void UnpackGMessage(string mess)
         {
             int code = int.Parse(mess.Substring(2, 2));
-            string error = "";
             switch (code)
             {
                 case 10:
@@ -485,65 +492,84 @@ namespace Backgammon
                 case 11:
                     {
                         client.game.SetStartDices(int.Parse(mess.Substring(4, 1)), int.Parse(mess.Substring(5, 1)));
-                        if (int.Parse(mess.Substring(4, 1)) == 0 || int.Parse(mess.Substring(5, 1)) == 0)
+                        if (client.game.GetStartDices()[0] == 0 || client.game.GetStartDices()[1] == 0)
                         {
-                            timermessage = 2;
+                            timermessage = TM_GIVE_START_DICES;
                         }
                         else
                         {
-                            timermessage = 0;
-                            if(int.Parse(mess.Substring(4, 1)) != int.Parse(mess.Substring(5, 1)))
+                            timermessage = TM_NOT_READY;
+
+                            if (client.game.GetStartDices()[0] > client.game.GetStartDices()[1])
                             {
-                                if (int.Parse(mess.Substring(4, 1)) > int.Parse(mess.Substring(5, 1)))
-                                {
-                                    MessageBox.Show("Your turn");
-                                }
-                                else
-                                {
-                                    MessageBox.Show("Opponent turn");
-                                }
-                                
-                                int gamestart = client.game.GameStart();
-                                
-                                if (gamestart == 0)
-                                {
-                                    timermessage = 3;
-                                    
-                                }
-
-                                if (gamestart == 1)
-                                {
-                                    client.setButtonVisible(client.RollDicesButton, true);
-                                    
-                                }
-
-                                if (gamestart == 2)
-                                {
-                                    client.setButtonVisible(client.RollDicesButton, true);
-                                    timermessage = 0;
-                                }
+                                client.NewInfoWidnow("Your turn");
                             }
-                            else
+
+                            if(client.game.GetStartDices()[0] < client.game.GetStartDices()[1])
                             {
-                                client.setButtonVisible(client.RollDicesButton, true);
-                                timermessage = 0;
+                                client.NewInfoWidnow("Opponent turn");
+                            }
+
+                            int gamestart = client.game.GameStart();
+
+                            switch (gamestart)
+                            {
+                                case 0:
+                                    {
+                                        timermessage = TM_GIVE_OPP_DICES;
+                                    } break;
+
+                                case 1:
+                                    {
+                                        if (client.game != null)
+                                        {
+                                            client.setButtonVisible(client.RollDicesButton, true);
+                                        }
+                                        else
+                                        {
+                                            client.setButtonVisible(client.RollDicesButton, false);
+                                        }
+                                    } break;
+
+                                case 2:
+                                    {
+                                        if (client.game != null)
+                                        {
+                                            client.NewInfoWidnow("Draw!");
+                                            client.setButtonVisible(client.RollDicesButton, true);
+                                            timermessage = TM_NOT_READY;
+                                        }
+                                        else
+                                        {
+                                            client.setButtonVisible(client.RollDicesButton, false);
+                                        }
+                                    } break;
                             }
                         }
                     } break;
                 case 20:
                     {
-                        client.game.SetPlayerDices(int.Parse(mess.Substring(4, 1)), int.Parse(mess.Substring(5, 1)));
+                        if(!client.game.SetPlayerDices(int.Parse(mess.Substring(4, 1)), int.Parse(mess.Substring(5, 1))))
+                        {
+                            client.NewInfoWidnow("No possible moves");
+                            client.game.EndTurn();
+                        }
                     } break;
                 case 21:
                     {
-                        client.game.SetOpponentDices(int.Parse(mess.Substring(4, 1)), int.Parse(mess.Substring(5, 1)));
+                        if(!client.game.SetOpponentDices(int.Parse(mess.Substring(4, 1)), int.Parse(mess.Substring(5, 1))))
+                        {
+                            client.NewInfoWidnow("No possible moves");
+                            client.game.EndTurn();
+                        }
+
                         if (int.Parse(mess.Substring(4, 1)) == 0 || int.Parse(mess.Substring(5, 1)) == 0)
                         {
-                            timermessage = 3;
+                            timermessage = TM_GIVE_OPP_DICES;
                         }
                         else
                         {
-                            timermessage = 4;
+                            timermessage = TM_GIVE_OPP_MOVE;
                         }
                     } break;
                 case 30:
@@ -551,30 +577,41 @@ namespace Backgammon
                     } break;
                 case 40:
                     {
-                        if (client.game.board.Move(client.game.opponent, client.game.opponentmove, int.Parse(mess.Substring(4, 2)), int.Parse(mess.Substring(6, 2))) - 1 == int.Parse(mess.Substring(8, 1)))
+                        int move = client.game.board.Move(client.game.opponent, client.game.opponentmove, int.Parse(mess.Substring(4, 2)), int.Parse(mess.Substring(6, 2)));
+
+                        if (move == 4)
                         {
-                            if(int.Parse(mess.Substring(8, 1)) == 1)
-                            {
-                               if(client.game.EndTurn())
-                               {
-                                    client.setButtonVisible(client.RollDicesButton, true);
-                                    MessageBox.Show("Your turn");
-                               }         
-                               timermessage = 0;
-                            }
-                            timermessage = 4;
+                            client.GivePointTo(client.game.player.color);
+                            PreaperMessageCG(50, winner: client.game.opponent.color);
                         }
                         else
                         {
-                            error = "Client and server moves not equal";
-                            MessageBox.Show(error);
-                            Application.Exit();
-                        }
+                            if (move - 1 == int.Parse(mess.Substring(8, 1)))
+                            {
 
+                                if (int.Parse(mess.Substring(8, 1)) == 1)
+                                {
+                                    if (client.game.EndTurn())
+                                    {
+                                        client.game.SetPlayerDices(0, 0);
+                                        client.NewInfoWidnow("Your turn");
+                                        client.setButtonVisible(client.RollDicesButton, true);
+                                    }
+                                    timermessage = TM_NOT_READY;
+                                }
+                                timermessage = TM_GIVE_OPP_MOVE;
+                            }
+                            else
+                            {
+                                client.NewInfoWidnow("Client and server moves not equal");
+                                Application.Exit();
+                            }
+                        }
+                        
                     } break;
                 case 41:
                     {
-                        timermessage = 4;
+                        timermessage = TM_GIVE_OPP_MOVE;
                     } break;
                 case 42:
                     {
@@ -582,18 +619,39 @@ namespace Backgammon
                     } break;
                 case 50:
                     {
+                        int decision;
+                        timermessage = TM_NEXT_GAME;
+                        if (MessageBox.Show(new Form() { TopMost = true }, "Do you want to play aggaint with " + client.opponentnick, "Backgammon", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                        {
+                            decision = 1;    
+                        }
+                        else
+                        {
+                            decision = 0;
+                            client.ResetGameForm();
+                            timermessage = TM_STILL_HERE; 
+                        }
+                        PreaperMessageCG(60, decision: decision);
                     } break;
                 case 60:
                     {
                     } break;
                 case 61:
                     {
-                        timermessage = 0;
-                        //todo
+                        if(int.Parse(mess.Substring(4, 1)) == 0)
+                        {
+                            timermessage = TM_STILL_HERE;
+                            client.ResetGameForm();
+                        }
+                        else
+                        {
+                            timermessage = TM_NOT_READY;
+                            PreaperMessageCG(10);
+                        }
                     } break;
                 case 62:
                     {
-                        timermessage = 5;
+                        timermessage = TM_NEXT_GAME;
                     } break;
                 case 70:
                     {
@@ -605,8 +663,7 @@ namespace Backgammon
 
                 default:
                     {
-                        error = "Unknown server message";
-                        MessageBox.Show(error);
+                        client.NewInfoWidnow("Unknown server message");
                     } break;
             }
         }
@@ -615,64 +672,63 @@ namespace Backgammon
         public void UnpackEMessage(string mess)
         {
             int code = int.Parse(mess.Substring(2, 2));
-            string error = "";
             switch(code)
             {
                 case 10:
                     {
-                        error = "Unknown message";
+                        client.NewInfoWidnow("Unknown message");
                     }break;
                 case 11:
                     {
-                        error = "Unknown message ack";
+                        client.NewInfoWidnow("Unknown message ack");
                     } break;
                 case 20:
                     {
-                        error = "Yau're not logged in";
+                        client.NewInfoWidnow("Yau're not logged in");
                     } break;
                 case 30:
                     {
-                        error = "You don't have a game";
-                        client.game = null;
-                        timermessage = 0;
+                       client.NewInfoWidnow("You don't have a game");
+                       client.ResetGameForm();
+                        timermessage = TM_STILL_HERE;
                     } break;
                 case 40:
                     {
-                        error = "Not your turn";
+                        client.NewInfoWidnow("Not your turn");
                     } break;
                 case 50:
                     {
-                        error = "Game not started - roll dices";
+                        client.NewInfoWidnow("Game not started - roll dices");
                     } break;
                 case 51:
                     {
-                        error = "You haven't rool dices";
+                        client.NewInfoWidnow("You haven't rool dices");
                     } break;
                 case 52:
                     {
-                        error = "You have unread opponent moves on server";
+                        client.NewInfoWidnow("You have unread opponent moves on server");
                     } break;
                 case 53:
                     {
-                        error = "Game Ended";
+                        client.NewInfoWidnow("Game Ended");
                     } break;
                 case 54:
                     {
-                        error = "Game hasn't end yet";
+                        client.NewInfoWidnow("Game hasn't end yet");
                     } break;
                 case 60:
                     {
-                        error = "Opponent left game";
-                        client.game = null;
+                        client.NewInfoWidnow("Opponent left game");
+                        client.ResetGameForm();
+                        timermessage = TM_STILL_HERE;
                         client.setButton(client.NewGameButton, true);
+                        client.setButtonVisible(client.RollDicesButton, false);
                     } break;
                 default:
                     {
-                        error = "Unknown server message";
+                        client.NewInfoWidnow("Unknown server message");
                     } break;
             }
-            if(code!= 11)
-                MessageBox.Show(error);
         }
     }
 }

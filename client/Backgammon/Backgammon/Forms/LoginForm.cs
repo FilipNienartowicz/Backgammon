@@ -12,6 +12,7 @@ using System.Net.Sockets;
 
 namespace Backgammon
 {
+    //Klasa okna logowania
     public partial class LoginForm : Form
     {
         GameForm game;
@@ -129,7 +130,10 @@ namespace Backgammon
 
         private void ExitButton_Click(object sender, EventArgs e)
         {
-            game.EndGame();
+            if (MessageBox.Show("Do you really want to exit?", "Backgammon", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, (MessageBoxOptions)0x40000) == DialogResult.Yes)
+            {
+                game.EndGame();
+            }
         }
     }
 }

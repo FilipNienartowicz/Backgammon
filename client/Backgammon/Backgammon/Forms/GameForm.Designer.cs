@@ -43,7 +43,6 @@
             this.RollDicesButton = new System.Windows.Forms.Button();
             this.OpponentSearchLabel = new System.Windows.Forms.Label();
             this.Serwertimer = new System.Windows.Forms.Timer(this.components);
-            this.WaitOpponentDicesLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.Board)).BeginInit();
             this.SuspendLayout();
             // 
@@ -53,7 +52,6 @@
             this.Board.Name = "Board";
             this.Board.TabStop = false;
             this.Board.Click += new System.EventHandler(this.Board_Click);
-            this.Board.Paint += new System.Windows.Forms.PaintEventHandler(this.Board_Paint);
             // 
             // BoardTimer
             // 
@@ -80,6 +78,7 @@
             // 
             resources.ApplyResources(this.NewGameButton, "NewGameButton");
             this.NewGameButton.Name = "NewGameButton";
+            this.NewGameButton.TabStop = false;
             this.NewGameButton.UseVisualStyleBackColor = true;
             this.NewGameButton.Click += new System.EventHandler(this.NewGameButton_Click);
             // 
@@ -87,6 +86,7 @@
             // 
             resources.ApplyResources(this.ExitButton, "ExitButton");
             this.ExitButton.Name = "ExitButton";
+            this.ExitButton.TabStop = false;
             this.ExitButton.UseVisualStyleBackColor = true;
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
@@ -120,21 +120,15 @@
             // Serwertimer
             // 
             this.Serwertimer.Enabled = true;
-            this.Serwertimer.Interval = 2000;
+            this.Serwertimer.Interval = 1000;
             this.Serwertimer.Tick += new System.EventHandler(this.Serwertimer_Tick);
-            // 
-            // WaitOpponentDicesLabel
-            // 
-            resources.ApplyResources(this.WaitOpponentDicesLabel, "WaitOpponentDicesLabel");
-            this.WaitOpponentDicesLabel.Name = "WaitOpponentDicesLabel";
             // 
             // GameForm
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoValidate = System.Windows.Forms.AutoValidate.EnablePreventFocusChange;
+            this.AutoValidate = System.Windows.Forms.AutoValidate.Disable;
             this.ControlBox = false;
-            this.Controls.Add(this.WaitOpponentDicesLabel);
             this.Controls.Add(this.OpponentSearchLabel);
             this.Controls.Add(this.RollDicesButton);
             this.Controls.Add(this.label2);
@@ -150,7 +144,6 @@
             this.ShowIcon = false;
             this.Activated += new System.EventHandler(this.Game_Activated);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.GameForm_FormClosing);
-            this.Paint += new System.Windows.Forms.PaintEventHandler(this.GameForm_Paint);
             ((System.ComponentModel.ISupportInitialize)(this.Board)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -172,6 +165,5 @@
         public System.Windows.Forms.Button RollDicesButton;
         public System.Windows.Forms.Label OpponentSearchLabel;
         private System.Windows.Forms.Timer Serwertimer;
-        private System.Windows.Forms.Label WaitOpponentDicesLabel;
     }
 }

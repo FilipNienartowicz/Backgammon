@@ -65,23 +65,11 @@
     <Compile Include="Classes\Dice.cs" />
     <Compile Include="Classes\Game.cs" />
     <Compile Include="Classes\Move.cs" />
-    <Compile Include="Forms\DecisionForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\DecisionForm.Designer.cs">
-      <DependentUpon>DecisionForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\GameForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\GameForm.Designer.cs">
       <DependentUpon>GameForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\InfoForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\InfoForm.Designer.cs">
-      <DependentUpon>InfoForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\LoginForm.cs">
       <SubType>Form</SubType>
@@ -94,9 +82,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerCommunicator.cs" />
-    <EmbeddedResource Include="Forms\DecisionForm.resx">
-      <DependentUpon>DecisionForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\GameForm.af-ZA.resx">
       <DependentUpon>GameForm.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -106,9 +91,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\GameForm.resx">
       <DependentUpon>GameForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\InfoForm.resx">
-      <DependentUpon>InfoForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+//Klasa reprezentujaca gracza
 namespace Backgammon
 {
     public class Player

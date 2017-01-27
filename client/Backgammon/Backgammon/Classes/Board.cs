@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+//Klasa reprezentujaca plansze do gry
 namespace Backgammon.Classes
 {
     public class Board
@@ -32,6 +33,7 @@ namespace Backgammon.Classes
                 table[i] = new Field();
             }
 
+            //rozstawia pionki na planszy
             table[0].SetFieldValues(2, 0);
             table[5].SetFieldValues(5, 1);
             table[7].SetFieldValues(3, 1);
@@ -89,88 +91,164 @@ namespace Backgammon.Classes
         {
             if (CanMoveThatWay(player.color, from, to))
             {
+                //jesli true, to zostanie wykonany ruch
+                bool canmove = false;
+                //jaka kosc ma zostac uzyta
+                int dicevalue = 0;
+
                 if (from < 24 && to < 24)
                 {
-                    if (move.dices[0].i == Math.Abs(from - to) || move.dices[1].i == Math.Abs(from - to))
+                    //Przenoszenie miedzy zwyklymi polami          
+                    
+                    //mozna uzyc kosci 0
+                    if (move.GetDice(0).i == Math.Abs(from - to) && !move.GetDice(0).used)
                     {
-                        int dec = table[to].AddPawn(player.color);
-                        if (dec > 0)
-                        {
-                            table[from].RemovePawn();
-                            if (dec == 2)
-                            {
-                                table[taken[1 - player.color]].AddPawn(1 - player.color);
-                            }
-                            if (move.UseDice(Math.Abs(from - to)))
-                            {
-                                return 2;
-                            }
-                            return 1;
-                        }
+                        canmove = true;
+                        dicevalue = move.GetDice(0).i;
                     }
+                    
+                    //mozna uzyc kosci 1
+                    if (move.GetDice(1).i == Math.Abs(from - to) && !move.GetDice(1).used)
+                    {
+                        canmove = true;
+                        dicevalue = move.GetDice(1).i;
+                    }
+                        
+                    //kosci rowne sb, mozna uzyc
+                    if (move.GetDice(1).i == Math.Abs(from - to) && move.GetDice(0).i == move.GetDice(1).i)
+                    {   
+                        canmove = true;
+                        dicevalue = move.GetDice(0).i;
+                    }  
                 }
                 else
                 {
-                    if(from == taken[move.color])
+                    //Wprowadzanie do domu przeciwnika zbitych pionkow gracza
+                    if(from == taken[move.color] && table[taken[move.color]].pawns > 0)
                     {
-                        int newto = to;
+                        //liczba oczek potrzebna na kosci
+                        int movevalue = to;
                         if (move.color == 0)
                         {
-                            newto = to + 1;
+                            movevalue = to + 1;
                         }
                         else
                         {
-                            newto = 24 - to;
+                            movevalue = 24 - to;
                         }
 
-                        if (move.dices[0].i == Math.Abs(newto) || move.dices[1].i == Math.Abs(newto))
+                        //mozna uzyc kosci 0
+                        if (move.GetDice(0).i == movevalue && !move.GetDice(0).used)
                         {
-                            int dec = table[to].AddPawn(player.color);
-                            if (dec > 0)
+                            canmove = true;
+                            dicevalue = move.GetDice(0).i;
+                        }
+
+                        //mozna uzyc kosci 1
+                        if (move.GetDice(1).i == movevalue && !move.GetDice(1).used)
+                        {
+                            canmove = true;
+                            dicevalue = move.GetDice(1).i;
+                        }
+
+                        //kosci rowne sb, mozna uzyc
+                        if (move.GetDice(1).i == movevalue && move.GetDice(0).i == move.GetDice(1).i)
+                        {
+                            canmove = true;
+                            dicevalue = move.GetDice(0).i;
+                        }  
+                    }
+
+                    //zdejmowanie pionkow z planszy - wybrany dom gracza i wszystkie pionki w domu
+                    if (to == home[move.color] && IsEnding(move.color))
+                    {
+                        //liczba oczek potrzebna na kosci - w przypadku konczacych ruchow mozna uzyc kosci wiekszej; warunkiem dodatkowym - wszystkie pola dalej od domu, niz przenoszony musza byc puste
+                        int movevalue = from + 1;
+                        if(move.color == 0)
+                        {
+                            movevalue = 24 - from;
+                        }
+
+                        //mozna uzyc kosci 0 - kosc rowna odleglosci
+                        if (move.GetDice(0).i == movevalue && !move.GetDice(0).used)
+                        {
+                            canmove = true;
+                            dicevalue = move.GetDice(0).i;
+                        }
+
+                        //mozna uzyc kosci 1 - kosc rowna odleglosci
+                        if (move.GetDice(1).i == movevalue && !move.GetDice(1).used)
+                        {
+                            canmove = true;
+                            dicevalue = move.GetDice(1).i;
+                        }
+
+                        //kosci rowne sb, mozna uzyc - kosc rowna odleglosci
+                        if (move.GetDice(1).i == movevalue && move.GetDice(0).i == move.GetDice(1).i)
+                        {
+                            canmove = true;
+                            dicevalue = move.GetDice(0).i;
+                        }
+
+                        //Kosc wieksza niz odleglosc (nadal nie ma ruchu, nie ma bardziej odleglych)
+                        if (!canmove && !isPawnInHomeFurther(move.color, from))
+                        {
+                            //mozna uzyc kosci 0 - kosc rowna odleglosci
+                            if (move.GetDice(0).i > movevalue && !move.GetDice(0).used)
                             {
-                                table[from].RemovePawn();
-                                if (dec == 2)
-                                {
-                                    table[taken[1 - player.color]].AddPawn(1 - player.color);
-                                }
-                                if (move.UseDice(Math.Abs(to + 1)))
-                                {
-                                    return 2;
-                                }
-                                return 1;
+                                canmove = true;
+                                dicevalue = move.GetDice(0).i;
+                            }
+
+                            //mozna uzyc kosci 1 - kosc rowna odleglosci
+                            if (move.GetDice(1).i > movevalue && !move.GetDice(1).used)
+                            {
+                                canmove = true;
+                                dicevalue = move.GetDice(1).i;
+                            }
+
+                            //kosci rowne sb, mozna uzyc - kosc rowna odleglosci
+                            if (move.GetDice(1).i > movevalue && move.GetDice(0).i == move.GetDice(1).i)
+                            {
+                                canmove = true;
+                                dicevalue = move.GetDice(0).i;
                             }
                         }
                     }
+                }
 
-                    if (to == home[move.color])
+                //Jesli oznaczono jakis ruch jako mozliwy, to wykonuje go
+                if (canmove)
+                {
+                    int dec = table[to].AddPawn(player.color);
+                    if (dec > 0)
                     {
-                        int newfrom = from;
-                        if (move.color == 0)
+                        table[from].RemovePawn();
+                        if (dec == 2)
                         {
-                            newfrom = 24 - from;
-                        }
-                        else
-                        {
-                            newfrom = from + 1;
+                            table[taken[1 - player.color]].AddPawn(1 - player.color);
                         }
 
-                        if (move.dices[0].i == Math.Abs(newfrom) || move.dices[1].i == Math.Abs(newfrom))
+                        bool endgame = false;
+                        if(table[home[player.color]].pawns == 15)
                         {
-                            int dec = table[to].AddPawn(player.color);
-                            if (dec > 0)
-                            {
-                                table[from].RemovePawn();
-                                if (dec == 2)
-                                {
-                                    table[taken[1 - player.color]].AddPawn(1 - player.color);
-                                }
-                                if (move.UseDice(Math.Abs(to + 1)))
-                                {
-                                    return 2;
-                                }
-                                return 1;
-                            }
+                            endgame = true;
                         }
+
+                        if (move.UseDice(dicevalue))
+                        {
+                            if(endgame)
+                            {
+                                return 4;
+                            }
+                            return 2;
+                        }
+
+                        if (endgame)
+                        {
+                            return 4;
+                        }
+                        return 1;
                     }
                 }
             }
@@ -239,8 +317,9 @@ namespace Backgammon.Classes
         {
             possiblemoves[0] = -1;
             possiblemoves[1] = -1;
-            if(selected >= 0)
+            if(selected >= 0 && table[selected].color == move.color)
             {
+                //wybrane pole jest zwyklym polem na planszy
                 if (selected < 24)
                 {
                     int mn = -1;
@@ -250,10 +329,39 @@ namespace Backgammon.Classes
                     }
 
                     for (int i = 0; i < 2; i++)
-                        if (CanSelect(move.color, selected + mn * move.dices[i].i))
+                    {
+                        int pos = selected + mn * move.GetDice(i).i;
+                        if (pos > 23 || pos < 0)
                         {
-                            possiblemoves[i] = selected + mn * move.dices[i].i;
+                            //Przesuniecie do domu
+                            if (IsEnding(move.color))
+                            {
+                                if (move.GetDice(0).i == move.GetDice(1).i || move.GetDice(i).used == false)
+                                {
+                                    if (pos == -1 || pos == 24)
+                                    {
+                                        possiblemoves[i] = home[move.color];
+                                    }
+
+                                    if (!isPawnInHomeFurther(move.color, selected))
+                                    {
+                                        possiblemoves[i] = home[move.color];
+                                    }
+                                }
+                            }
                         }
+                        else
+                        {
+                            //Przesuniecie na inne pole
+                            if (CanSelect(move.color, pos))
+                            {
+                                if (move.GetDice(0).i == move.GetDice(1).i || move.GetDice(i).used == false)
+                                {
+                                    possiblemoves[i] = pos;
+                                }
+                            }
+                        }
+                    }
                 }
                 else
                 {
@@ -262,58 +370,28 @@ namespace Backgammon.Classes
                         if(move.color == 0)
                         {
                             for (int i = 0; i < 2; i++)
-                                if (CanSelect(move.color, move.dices[i].i - 1))
+                                if (CanSelect(move.color, move.GetDice(i).i - 1))
                                 {
-                                    possiblemoves[i] = move.dices[i].i - 1;
+                                    if (move.GetDice(0).i == move.GetDice(1).i || move.GetDice(i).used == false)
+                                    {
+                                        possiblemoves[i] = move.GetDice(i).i - 1;
+                                    }
                                 }
                         }
                         else
                         {
                             for (int i = 0; i < 2; i++)
-                                if (CanSelect(move.color, 24 - move.dices[i].i))
+                                if (CanSelect(move.color, 24 - move.GetDice(i).i))
                                 {
-                                    possiblemoves[i] = 24 - move.dices[i].i;
+                                    if (move.GetDice(0).i == move.GetDice(1).i || move.GetDice(i).used == false)
+                                    {
+                                        possiblemoves[i] = 24 - move.GetDice(i).i;
+                                    }
                                 }
                         }
                     }
                 }
             }
-        }
-
-        //Sumuje pionki znajdujace sie kolo domu
-        private int PawnsInHome(int color)
-        {
-            int sum = 0;
-            if(color == 0)
-            {
-                for (int i = 18; i < 24; i++)
-                {
-                    if (table[i].color == 1)
-                        sum += table[i].pawns;
-                }
-            }
-            else
-            {
-                if(color == 1)
-                {
-                    for(int i = 0; i < 6; i++)
-                    {
-                        if(table[i].color == 1)
-                            sum += table[i].pawns;
-                    }
-                }
-            }
-            return sum;
-        }
-
-        //Zwraca prawde jesli mozna wprowadzac pionki do domu
-        private bool IsEnding(int color)
-        {
-            if(table[home[color]].pawns + PawnsInHome(color) == 15)
-            {
-                return true;
-            }
-            return false;
         }
 
         //Sprawdza, czy podane pole moze zostac zaznaczone przez gracza
@@ -357,6 +435,11 @@ namespace Backgammon.Classes
         //Decyduje, ktore z zaznaczonych pol ma byc wybrane
         public int Select(int color, int selected, int matched)
         {
+            if(selected == matched)
+            {
+                return -1;
+            }
+
             if(matched >= 0)
             {
                 if (matched < 24)
@@ -377,7 +460,7 @@ namespace Backgammon.Classes
             return selected;
         }
 
-        //Sprawdza w jakie pole kliknal gracz
+        //Sprawdza w jakie pole kliknal gracz i czy istnieje ruch idpowiadajacy temu zaznaczeniu
         public int TrytoSelectField(Player player, Move move, int x, int y, Classes.ClientMove clientmove)
         { 
             int matched = -1;
@@ -419,7 +502,7 @@ namespace Backgammon.Classes
             }
             else
             {
-                if (y > 450)
+                if (y > 400)
                 { 
                     if (x > 580)
                     {
@@ -455,25 +538,37 @@ namespace Backgammon.Classes
                     }
                 }
             }
+            
             if(CanSelect(player.color, matched))
             {
-                if(matched > 0 && selected > 0)
+                if(matched >= 0 && selected >= 0)
                 {
                     if(selected != matched)
                     {
-                        int endofturn = Move(player, move, selected, matched);
-                        if(endofturn > 0)
+                        int movemade = Move(player, move, selected, matched);
+                        if(movemade > 0)
                         {
-                            
                             clientmove.from = selected;
                             clientmove.to = matched;
-                            clientmove.endturn = endofturn - 1;
-                            if(endofturn == 2)
+                            clientmove.endturn = movemade - 1;
+
+                            //Koniec gry
+                            if (clientmove.endturn == 4)
                             {
-                                PossibleMoves(selected, move, possiblemoves);
+                                movemade = 4;
+                            }
+                            else
+                            {
+                                //Brak mozliwych ruchow
+                                if (clientmove.endturn == 0 && !isAnyPossibleMove(move))
+                                {
+                                    clientmove.endturn = 1;
+                                    movemade = 3;
+                                }
                             }
                             selected = -1;
-                            return endofturn;
+                            PossibleMoves(selected, move, possiblemoves);
+                            return movemade;
                         }
                     } 
                 }
@@ -485,6 +580,97 @@ namespace Backgammon.Classes
             selected = Select(player.color, selected, matched); 
             PossibleMoves(selected, move, possiblemoves);
             return 0;
+        }
+
+        //Sprawdza, czy istnieje jakikolwiek mozliwy ruch
+        public bool isAnyPossibleMove(Move move)
+        {
+            int[] possible = new int[2];
+
+            if (table[taken[move.color]].pawns == 0)
+            {
+                for (int i = 0; i < 24; i++)
+                {
+                    if (table[i].pawns > 0 && table[i].color == move.color)
+                    {
+                        PossibleMoves(i, move, possible);
+                        if (possible[0] >= 0 || possible[1] >= 0)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                PossibleMoves(taken[move.color], move, possible);
+                if (possible[0] >= 0 || possible[1] >= 0)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        //Sumuje pionki znajdujace sie kolo domu
+        private int PawnsInHome(int color)
+        {
+            int sum = 0;
+            if (color == 0)
+            {
+                for (int i = 18; i < 24; i++)
+                {
+                    if (table[i].color == 0)
+                        sum += table[i].pawns;
+                }
+            }
+            else
+            {
+                if (color == 1)
+                {
+                    for (int i = 0; i < 6; i++)
+                    {
+                        if (table[i].color == 1)
+                            sum += table[i].pawns;
+                    }
+                }
+            }
+            return sum;
+        }
+
+        //Sprawdza czy jest jakikolwiek pionek w domu dalej niz ten, ktory chcemy przesunac (jesli jest, nie mozemy przeniesc za pomoca kosci wiekszej niz zaznaczone pole)
+        private bool isPawnInHomeFurther(int color, int pos)
+        {
+            if (color == 0)
+            {
+                for (int i = 18; i < pos; i++)
+                {
+                    if (table[i].color == 0 && table[i].pawns > 0)
+                        return true;
+                }
+            }
+            else
+            {
+                if (color == 1)
+                {
+                    for (int i = pos + 1; i < 6; i++)
+                    {
+                        if (table[i].color == 1 && table[i].pawns > 0)
+                            return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        //Zwraca prawde jesli mozna wprowadzac pionki do domu
+        private bool IsEnding(int color)
+        {
+            if (table[home[color]].pawns + PawnsInHome(color) == 15)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

@@ -8,6 +8,7 @@ using System.Windows.Forms;
 
 namespace Backgammon
 {
+    //Klasa odpowiedzialna za wyswietlanie gry na planszy
     class GameGraphics
     {
         private Bitmap board = null;
@@ -15,6 +16,7 @@ namespace Backgammon
         private Bitmap[,] DiceImage;
         private Bitmap[] PawnImage;
         private Bitmap[] MarkerImage;
+        private int[] pawnsdistance;
 
         public GameGraphics()
         {
@@ -47,6 +49,13 @@ namespace Backgammon
                 MessageBox.Show("There was an error opening the graphics. Make sure there is a folder 'Grafika' next to backgammon.exe");
                 Application.Exit();
             }
+
+            pawnsdistance = new int[16];
+            pawnsdistance[0] = 0;
+            for(int i=1; i < 16; i++)
+            {
+                pawnsdistance[i] = Math.Min(45, (int)(315/i));
+            }
         }
 
         //Przygotowuje grafike planszy
@@ -62,7 +71,7 @@ namespace Backgammon
                 {
                     for (int j = 0; j < game.board.table[i].pawns; j++)
                     {
-                        g.DrawImage(PawnImage[game.board.table[i].color], new Point(730 - i*55, 30 + 45 * j));   
+                        g.DrawImage(PawnImage[game.board.table[i].color], new Point(727 - i * 55, 30 + pawnsdistance[game.board.table[i].pawns] * j));   
                     }
                     
                     if(game.board.selected == i)
@@ -80,7 +89,7 @@ namespace Backgammon
                 {
                     for (int j = 0; j < game.board.table[i].pawns; j++)
                     {
-                        g.DrawImage(PawnImage[game.board.table[i].color], new Point(335 - (i - 6) * 55, 30 + 45 * j));
+                        g.DrawImage(PawnImage[game.board.table[i].color], new Point(332 - (i - 6) * 55, 30 + pawnsdistance[game.board.table[i].pawns] * j));
                     }
 
                     if (game.board.selected == i)
@@ -98,7 +107,7 @@ namespace Backgammon
                 {
                     for(int j = 0; j < game.board.table[i].pawns; j++)
                     {
-                        g.DrawImage(PawnImage[game.board.table[i].color], new Point(60 + (i - 12) * 55, 785 - 45 * j)); 
+                        g.DrawImage(PawnImage[game.board.table[i].color], new Point(57 + (i - 12) * 55, 780 - pawnsdistance[game.board.table[i].pawns] * j)); 
                     }
 
                     if (game.board.selected == i)
@@ -116,7 +125,7 @@ namespace Backgammon
                 {
                     for (int j = 0; j < game.board.table[i].pawns; j++)
                     {
-                        g.DrawImage(PawnImage[game.board.table[i].color], new Point(460 + (i - 18) * 55, 785 - 45 * j));
+                        g.DrawImage(PawnImage[game.board.table[i].color], new Point(457 + (i - 18) * 55, 780 - pawnsdistance[game.board.table[i].pawns] * j));
                     }
 
                     if (game.board.selected == i)
@@ -132,7 +141,7 @@ namespace Backgammon
 
                 for (int j = 0; j < game.board.table[24].pawns; j++)
                 {
-                    g.DrawImage(PawnImage[game.board.table[24].color], new Point(395, 200 + 45 * j));
+                    g.DrawImage(PawnImage[game.board.table[24].color], new Point(395, 200 + pawnsdistance[game.board.table[24].pawns] * j));
                     if (game.board.selected == 24)
                     {
                         g.DrawImage(MarkerImage[0], new Point(415, 10));
@@ -142,7 +151,7 @@ namespace Backgammon
                 for (int j = 0; j < game.board.table[25].pawns; j++)
                 {
 
-                    g.DrawImage(PawnImage[game.board.table[25].color], new Point(400, 600 - 45 * j));
+                    g.DrawImage(PawnImage[game.board.table[25].color], new Point(400, 600 - pawnsdistance[game.board.table[25].pawns] * j));
                     if (game.board.selected == 25)
                     {
                         g.DrawImage(MarkerImage[0], new Point(420, 835));
@@ -151,32 +160,34 @@ namespace Backgammon
 
                 for (int j = 0; j < game.board.table[26].pawns; j++)
                 {
-                    g.DrawImage(PawnImage[game.board.table[26].color], new Point(790, 700 - 10 * j));
-                    if (game.board.possiblemoves[0] == 26 || game.board.possiblemoves[1] == 26)
-                    {
-                        g.DrawImage(MarkerImage[1], new Point(790, 720));
-                    }
+                    g.DrawImage(PawnImage[game.board.table[26].color], new Point(790, 700 - 10 * j));   
+                }
+
+                if (game.board.possiblemoves[0] == 26 || game.board.possiblemoves[1] == 26)
+                {
+                    g.DrawImage(MarkerImage[1], new Point(808, 760));
                 }
 
                 for (int j = 0; j < game.board.table[27].pawns; j++)
                 {
                     g.DrawImage(PawnImage[game.board.table[27].color], new Point(790, 100 + 10 * j));
-                    if (game.board.possiblemoves[0] == 27 || game.board.possiblemoves[1] == 27)
-                    {
-                        g.DrawImage(MarkerImage[1], new Point(790, 90));
-                    }
+                    
+                }
+
+                if (game.board.possiblemoves[0] == 27 || game.board.possiblemoves[1] == 27)
+                {
+                    g.DrawImage(MarkerImage[1], new Point(808, 70));
                 }
 
                 //wyswietla kosci
                 if(game.turn == 0)
                 {
                     Classes.Dice[] dices = null;
-                    if (game.playermove != null)
+                    if (game.playermove != null && !game.playermove.GetEndturn())
                     {
-                        
                         if(game.playermove.color == 0)
                         {
-                            dices = game.playermove.dices;
+                            dices = game.playermove.GetDices();
                         }
                     }
                     
@@ -185,7 +196,7 @@ namespace Backgammon
                         
                         if(game.opponentmove.color == 0)
                         {
-                            dices = game.opponentmove.dices;
+                            dices = game.opponentmove.GetDices();
                         }
                     }
 
@@ -225,7 +236,7 @@ namespace Backgammon
 
                         if (game.playermove.color == 1)
                         {
-                            dices = game.playermove.dices;
+                            dices = game.playermove.GetDices();
                         }
                     }
 
@@ -234,7 +245,7 @@ namespace Backgammon
 
                         if (game.opponentmove.color == 1)
                         {
-                            dices = game.opponentmove.dices;
+                            dices = game.opponentmove.GetDices();
                         }
                     }
 
@@ -268,13 +279,13 @@ namespace Backgammon
 
                 if (game.turn == 2)
                 {
-                    if (game.startdices[game.player.color] > 0)
+                    if (game.GetStartDices()[game.player.color] > 0)
                     {
-                        g.DrawImage(DiceImage[0, game.startdices[game.player.color]], new Point(250, 400));
+                        g.DrawImage(DiceImage[0, game.GetStartDices()[game.player.color]], new Point(250, 400));
                     }
-                    if (game.startdices[1 - game.player.color] > 0)
+                    if (game.GetStartDices()[1 - game.player.color] > 0)
                     {
-                        g.DrawImage(DiceImage[1, game.startdices[1 - game.player.color]], new Point(550, 400));
+                        g.DrawImage(DiceImage[1, game.GetStartDices()[1 - game.player.color]], new Point(550, 400));
                     }
                 }
             }

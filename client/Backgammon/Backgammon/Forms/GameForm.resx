@@ -27374,7 +27374,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;Board.ZOrder" xml:space="preserve">
-    <value>11</value>
+    <value>10</value>
   </data>
   <metadata name="BoardTimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>11, 22</value>
@@ -27382,11 +27382,14 @@
   <data name="PlayerWhiteNick.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
+  <data name="PlayerWhiteNick.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Microsoft Sans Serif, 16.2pt</value>
+  </data>
   <data name="PlayerWhiteNick.Location" type="System.Drawing.Point, System.Drawing">
-    <value>858, 15</value>
+    <value>876, 145</value>
   </data>
   <data name="PlayerWhiteNick.Size" type="System.Drawing.Size, System.Drawing">
-    <value>43, 17</value>
+    <value>85, 32</value>
   </data>
   <data name="PlayerWhiteNick.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -27404,7 +27407,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;PlayerWhiteNick.ZOrder" xml:space="preserve">
-    <value>10</value>
+    <value>9</value>
   </data>
   <data name="PlayerWhiteScore.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -27421,6 +27424,9 @@
   <data name="PlayerWhiteScore.Text" xml:space="preserve">
     <value>0</value>
   </data>
+  <data name="PlayerWhiteScore.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
   <data name="&gt;&gt;PlayerWhiteScore.Name" xml:space="preserve">
     <value>PlayerWhiteScore</value>
   </data>
@@ -27431,16 +27437,19 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;PlayerWhiteScore.ZOrder" xml:space="preserve">
-    <value>9</value>
+    <value>8</value>
   </data>
   <data name="PlayerRedNick.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
+  <data name="PlayerRedNick.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Microsoft Sans Serif, 16.2pt</value>
+  </data>
   <data name="PlayerRedNick.Location" type="System.Drawing.Point, System.Drawing">
-    <value>867, 849</value>
+    <value>876, 710</value>
   </data>
   <data name="PlayerRedNick.Size" type="System.Drawing.Size, System.Drawing">
-    <value>43, 17</value>
+    <value>85, 32</value>
   </data>
   <data name="PlayerRedNick.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -27458,10 +27467,10 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;PlayerRedNick.ZOrder" xml:space="preserve">
-    <value>8</value>
+    <value>7</value>
   </data>
   <data name="NewGameButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>871, 349</value>
+    <value>882, 349</value>
   </data>
   <data name="NewGameButton.Size" type="System.Drawing.Size, System.Drawing">
     <value>75, 82</value>
@@ -27482,10 +27491,10 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;NewGameButton.ZOrder" xml:space="preserve">
-    <value>7</value>
+    <value>6</value>
   </data>
   <data name="ExitButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>871, 460</value>
+    <value>882, 460</value>
   </data>
   <data name="ExitButton.Size" type="System.Drawing.Size, System.Drawing">
     <value>75, 82</value>
@@ -27506,7 +27515,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;ExitButton.ZOrder" xml:space="preserve">
-    <value>6</value>
+    <value>5</value>
   </data>
   <data name="label1.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -27523,6 +27532,9 @@
   <data name="label1.Text" xml:space="preserve">
     <value>Score:</value>
   </data>
+  <data name="label1.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
   <data name="&gt;&gt;label1.Name" xml:space="preserve">
     <value>label1</value>
   </data>
@@ -27533,13 +27545,13 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;label1.ZOrder" xml:space="preserve">
-    <value>5</value>
+    <value>4</value>
   </data>
   <data name="label2.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="label2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>868, 822</value>
+    <value>879, 822</value>
   </data>
   <data name="label2.Size" type="System.Drawing.Size, System.Drawing">
     <value>49, 17</value>
@@ -27549,6 +27561,9 @@
   </data>
   <data name="label2.Text" xml:space="preserve">
     <value>Score:</value>
+  </data>
+  <data name="label2.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
   </data>
   <data name="&gt;&gt;label2.Name" xml:space="preserve">
     <value>label2</value>
@@ -27560,13 +27575,13 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;label2.ZOrder" xml:space="preserve">
-    <value>3</value>
+    <value>2</value>
   </data>
   <data name="PlayerRedScore.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="PlayerRedScore.Location" type="System.Drawing.Point, System.Drawing">
-    <value>919, 822</value>
+    <value>930, 822</value>
   </data>
   <data name="PlayerRedScore.Size" type="System.Drawing.Size, System.Drawing">
     <value>16, 17</value>
@@ -27576,6 +27591,9 @@
   </data>
   <data name="PlayerRedScore.Text" xml:space="preserve">
     <value>0</value>
+  </data>
+  <data name="PlayerRedScore.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
   </data>
   <data name="&gt;&gt;PlayerRedScore.Name" xml:space="preserve">
     <value>PlayerRedScore</value>
@@ -27587,7 +27605,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;PlayerRedScore.ZOrder" xml:space="preserve">
-    <value>4</value>
+    <value>3</value>
   </data>
   <data name="RollDicesButton.Location" type="System.Drawing.Point, System.Drawing">
     <value>377, 389</value>
@@ -27614,13 +27632,13 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;RollDicesButton.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>1</value>
   </data>
   <data name="OpponentSearchLabel.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="OpponentSearchLabel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>858, 329</value>
+    <value>869, 329</value>
   </data>
   <data name="OpponentSearchLabel.Size" type="System.Drawing.Size, System.Drawing">
     <value>130, 17</value>
@@ -27644,41 +27662,11 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;OpponentSearchLabel.ZOrder" xml:space="preserve">
-    <value>1</value>
+    <value>0</value>
   </data>
   <metadata name="Serwertimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>166, 15</value>
   </metadata>
-  <data name="WaitOpponentDicesLabel.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="WaitOpponentDicesLabel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>354, 493</value>
-  </data>
-  <data name="WaitOpponentDicesLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>158, 17</value>
-  </data>
-  <data name="WaitOpponentDicesLabel.TabIndex" type="System.Int32, mscorlib">
-    <value>12</value>
-  </data>
-  <data name="WaitOpponentDicesLabel.Text" xml:space="preserve">
-    <value>Wait for opponent dices</value>
-  </data>
-  <data name="WaitOpponentDicesLabel.Visible" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
-  <data name="&gt;&gt;WaitOpponentDicesLabel.Name" xml:space="preserve">
-    <value>WaitOpponentDicesLabel</value>
-  </data>
-  <data name="&gt;&gt;WaitOpponentDicesLabel.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;WaitOpponentDicesLabel.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;WaitOpponentDicesLabel.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
@@ -27689,7 +27677,7 @@
     <value>8, 16</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>989, 890</value>
+    <value>1003, 890</value>
   </data>
   <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
     <value>CenterScreen</value>

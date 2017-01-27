@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+//Klasa reprezentujaca ruch gracza
 namespace Backgammon.Classes
 {
     //informacje, czy ruch jest podwojny, kosci oraz informacje o koncu tury
     public class Move
     {
         public bool x2move;
-        public Dice[] dices;
+        private Dice[] dices;
         private bool endturn;
         public int color;
 
@@ -24,6 +25,20 @@ namespace Backgammon.Classes
             dices = new Dice[]{new Dice(dice1), new Dice(dice2)};
             endturn = false;
             this.color = color;
+        }
+
+        public Dice GetDice(int i)
+        {
+            if(i == 0 || i == 1)
+            {
+                return dices[i];
+            }
+            return null;
+        }
+
+        public Dice[] GetDices()
+        {
+            return dices;
         }
 
         public bool GetEndturn()
@@ -69,6 +84,9 @@ namespace Backgammon.Classes
                     if (!x2move)
                     {
                         endturn = true;
+                        dices[0].i = 0;
+                        dices[1].i = 0;
+
                     }
                     else
                     {

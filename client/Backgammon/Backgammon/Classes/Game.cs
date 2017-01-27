@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+//Klasa reprezentujaca gre
 namespace Backgammon.Classes
 {
     public class Game
@@ -13,7 +14,7 @@ namespace Backgammon.Classes
         public Player player;
         public Player opponent;
         public Move opponentmove;
-        public int[] startdices;
+        private int[] startdices;
         public Move playermove;
         public int turn;
 
@@ -32,6 +33,7 @@ namespace Backgammon.Classes
             turn = 2;
         }
 
+        //Rozpoczyna gre. Zwraca kolor zaczynajacego
         public int GameStart()
         {
             if(startdices[0] != startdices[1])
@@ -47,9 +49,11 @@ namespace Backgammon.Classes
                     return 0;
                 }
             }
+            turn = 2;
             return 2;
         }
 
+        //Konczy ture (zmienia turn na kolor drugiego gracza) zwraca true, jesli tura gracza
         public bool EndTurn()
         {
             turn = 1 - turn;
@@ -57,12 +61,12 @@ namespace Backgammon.Classes
             {
                 return true;
             }
-            else
-            {
-                playermove.dices[0].i = 0;
-                playermove.dices[0].i = 1;
-            }
             return false;
+        }
+
+        public int[] GetStartDices()
+        {
+            return startdices;
         }
 
         public void SetStartDices(int dice1, int dice2)
@@ -71,26 +75,46 @@ namespace Backgammon.Classes
             startdices[1] = dice2;
         }
 
-        public void SetOpponentDices(int dice1, int dice2)
+        //Ustawia kosci przeciwnika, jesli nie ma mozliwych ruchow zglasza to, aby zakonczyc ture
+        public bool SetOpponentDices(int dice1, int dice2)
         {
-            opponentmove.dices[0] = new Dice(dice1);
-            opponentmove.dices[1] = new Dice(dice2);
+            int color = opponentmove.color;
+            opponentmove = new Move(color, dice1, dice2);
+            if (dice1 > 0 && dice2 > 0 && !board.isAnyPossibleMove(opponentmove))
+            {
+                return false;
+            }
+            return true;
         }
 
-        public void SetPlayerDices(int dice1, int dice2)
+        //Ustawia kosci gracza, jesli nie ma mozliwych ruchow zglasza to, aby zakonczyc ture
+        public bool SetPlayerDices(int dice1, int dice2)
         {
             int color = playermove.color;
             playermove = new Move(color, dice1, dice2);
+            if (dice1 > 0 && dice2 > 0 && !board.isAnyPossibleMove(playermove))
+            {
+                return false;
+            }
+            return true;
         }
 
+        //Reakcja na klikniecie pola gry - dopasowuje klikniecie, wybiera pole i robi ruch. Jesli ruch konczyl ture, to zmienia ture.
         public int SelectField(int x, int y, Classes.ClientMove clientmove)
         {
             if(turn == player.color)
             {
                 int move = board.TrytoSelectField(player, playermove, x, y, clientmove);
-                if(move == 2)
+                if(move >= 2)
                 {
                     turn = 1 - turn;
+
+                    if(move == 4)
+                    {
+                        turn = 2;
+                        startdices[0] = 0;
+                        startdices[1] = 0;
+                    }
                 }
                 return move;
             }

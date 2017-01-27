@@ -8,20 +8,19 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-
+//Glowna klasa - glowne okno aplikacji
 namespace Backgammon
 {
     public partial class GameForm : Form
     {
         public LoginForm login;
-        private InfoForm info;
-        private DecisionForm decision;
         private GameGraphics graphics;
 
         public Classes.Game game;
         public string opponentnick;
         public string clientnick;
         private int opponentsearch;
+        private bool clickable;
 
         public ServerCommunicator servercommunicator;
 
@@ -32,17 +31,11 @@ namespace Backgammon
             this.login = new LoginForm(this);
             login.Visible = true;
             
-            this.info = new InfoForm("asdf");
-            this.info.Visible = false;
-
-            this.decision = new DecisionForm();
-            this.decision.Visible = false;
-            
             servercommunicator = new ServerCommunicator(this);
             opponentnick = "guest";
             opponentsearch = 0;
             setButton(this.NewGameButton, false);
-
+            clickable = true;
         }
 
         //Przerzuca inne okna, gdy aktywne razem z oknem gry
@@ -84,6 +77,23 @@ namespace Backgammon
             }
         }
 
+        //Tworzy okno informacyjne z tekstem podanym jako parametr
+        delegate void NewInfoWidnowCallback(string text);
+        public void NewInfoWidnow(string text)
+        {
+            if (this.InvokeRequired)
+            {
+                NewInfoWidnowCallback windowCallback = new NewInfoWidnowCallback(NewInfoWidnow);
+                this.Invoke(windowCallback, text);
+            }
+            else
+            {
+                clickable = false;
+                MessageBox.Show(new Form(){TopMost = true},text, "Backgammon",MessageBoxButtons.OK);
+                clickable = true;
+            }
+        }
+
         //Tworzy nowa gre
         public void NewGame(int playerscore, int opponentscore, int color)
         {
@@ -92,7 +102,7 @@ namespace Backgammon
             {
                 col = "white";
             }
-            MessageBox.Show("Opponent found. Your color: " + col);
+            NewInfoWidnow("Opponent found. Your color: " + col);
             setButton(NewGameButton, true);
             game = new Classes.Game(clientnick, playerscore, opponentnick, opponentscore, color);
             if(color == 0)
@@ -111,6 +121,19 @@ namespace Backgammon
             } 
         }
 
+        public void ResetGameForm()
+        {
+            game = null;
+            setLabelText(PlayerRedNick, "guest");
+            setLabelText(PlayerWhiteNick, "guest");
+            setLabelText(PlayerRedScore, "0");
+            setLabelText(PlayerWhiteScore, "0");
+            opponentnick = "guest";
+            setButton(NewGameButton, true);
+            setButtonVisible(RollDicesButton, false);
+            setLabelVisible(OpponentSearchLabel,false);
+        }
+
         //Konczy program
         public void EndGame()
         {
@@ -120,30 +143,27 @@ namespace Backgammon
 
         public void Surrender()
         {
-            game = null;
+            ResetGameForm();
         }
         
         //Exit klikniete
         private void ExitButton_Click(object sender, EventArgs e)
         {
-            this.EndGame();
+            if (clickable)
+            {
+                clickable = false;
+                if (MessageBox.Show(new Form(){TopMost = true},"Do you really want to exit?", "Backgammon",MessageBoxButtons.YesNo,MessageBoxIcon.Warning) == DialogResult.Yes)
+                {
+                    this.EndGame();
+                }
+                clickable = true;
+            }
         }
 
         //zamyka socket, gdy zamykany jest program
         private void GameForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             servercommunicator.CloseSocket();
-        }
-
-        //Zwieksza opponentsearch - gdy n razy dostanie odpowiedz negatywna 
-        public void OpponentSearchInc()
-        {
-            //todo
-            opponentsearch++;
-            if(opponentsearch > 30)
-            {
-                MessageBox.Show("No opponent available");
-            }
         }
 
         //Ustawia Button
@@ -179,33 +199,51 @@ namespace Backgammon
         //New game klikniete
         private void NewGameButton_Click(object sender, EventArgs e)
         {
-            setButton(this.NewGameButton, false);
-            if(game == null)
+            if (clickable)
             {
-                servercommunicator.PreaperMessageCI(40);
-            }
-            else
-            {
-                game = null;
-                setButtonVisible(this.RollDicesButton, false);
-                setLabelVisible(OpponentSearchLabel, true);
-                servercommunicator.PreaperMessageCG(70);
-                servercommunicator.PreaperMessageCI(40);
+                setButton(this.NewGameButton, false);
+                if (game == null)
+                {
+                    servercommunicator.PreaperMessageCI(40);
+                }
+                else
+                {
+                    clickable = false;
+                    if (MessageBox.Show(new Form() { TopMost = true }, "Do you really want to quit the current game?", "Backgammon", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                    {
+                        ResetGameForm();
+                        setLabelVisible(OpponentSearchLabel, true);
+                        servercommunicator.PreaperMessageCG(70);
+                        servercommunicator.PreaperMessageCI(40);
+                    }
+                    else
+                    {
+                        setButton(this.NewGameButton, true);
+                    }
+                    clickable = true; 
+                }
             }
         }
 
         //Roll Dices klikniete
         private void RollDicesButton_Click(object sender, EventArgs e)
         {
-            setButtonVisible(this.RollDicesButton, false);
-            if(game.turn == 2)
+            if (clickable && game!=null)
             {
-                servercommunicator.PreaperMessageCG(11);
+                setButtonVisible(this.RollDicesButton, false);
+                if (game.turn == 2)
+                {
+                    servercommunicator.PreaperMessageCG(11);
+                }
+                else
+                {
+                    servercommunicator.PreaperMessageCG(20);
+                }
             }
             else
             {
-                servercommunicator.PreaperMessageCG(20);
-            }       
+                setButtonVisible(this.RollDicesButton, false);
+            }
         }
 
         //Zamyka login
@@ -226,42 +264,70 @@ namespace Backgammon
             }
         }
 
+        //Klikniecie planszy
+        private void Board_Click(object sender, EventArgs e)
+        {
+            if (clickable)
+            {
+                MouseEventArgs click = (MouseEventArgs)e;
+                if (game != null)
+                {
+                    Classes.ClientMove clientmove = new Classes.ClientMove();
+                    int move = game.SelectField(click.X, click.Y, clientmove);
+                    if (move > 0)
+                    {
+                        if(move == 3)
+                        {
+                            NewInfoWidnow("No possible moves");
+                        }
+
+                        servercommunicator.PreaperMessageCG(30, clientmove.from, clientmove.to, clientmove.endturn);
+
+                        if (move == 4)
+                        {
+                            GivePointTo(game.player.color);
+                            servercommunicator.PreaperMessageCG(50, winner: game.player.color);
+                        }
+                    }
+                }
+            }
+        }
+
+        //Zwieksza opponentsearch - gdy n razy dostanie odpowiedz negatywna 
+        public void OpponentSearchInc()
+        {
+            //todo
+            opponentsearch++;
+            if (opponentsearch > 60)
+            {
+                servercommunicator.timermessage = 0;
+                opponentsearch = 0;
+                NewInfoWidnow("No opponent available");
+            }
+        }
+
         //Jesli uplynal dluzszy czas, to wymusza wyslanie wiadomosci do serwera
         private void Serwertimer_Tick(object sender, EventArgs e)
         {
-            this.Update();
-        } 
-        
-        //Wyslanie wymuszonej wiadomosci
-        private void GameForm_Paint(object sender, PaintEventArgs e)
-        {
             servercommunicator.ServerTimerMessage();
-        }
+        } 
 
         //Timer, ktory wywoluje odsiwezenie ekranu
         private void BoardTimer_Tick(object sender, EventArgs e)
         {
-            this.Board.Update();
-        }
-
-        //Wywoluje rysowanie na planszy, gdy jest ona odswiezana
-        private void Board_Paint(object sender, PaintEventArgs e)
-        {
             Board.Image = this.graphics.CreateGameBoard(game);
+            this.Board.Refresh();
         }
 
-        //Klikniecie planszy
-        private void Board_Click(object sender, EventArgs e)
+        public void GivePointTo(int color)
         {
-            MouseEventArgs click = (MouseEventArgs)e;
-            if (game != null)
+            if(color == 0)
             {
-                Classes.ClientMove clientmove = new Classes.ClientMove();
-                int move = game.SelectField(click.X, click.Y, clientmove);
-                if(move > 0)
-                {
-                    servercommunicator.PreaperMessageCG(30, clientmove.from, clientmove.to, clientmove.endturn);
-                }
+                setLabelText(PlayerWhiteScore, (int.Parse(PlayerWhiteScore.Text) + 1).ToString());
+            }
+            else
+            {
+                setLabelText(PlayerRedScore, (int.Parse(PlayerRedScore.Text) + 1).ToString());
             }
         }
     }
