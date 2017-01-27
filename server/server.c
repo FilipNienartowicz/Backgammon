@@ -849,10 +849,12 @@ int UnpackMessage(int i, char* mess)
 									}
 									else
 									{
-										struct SGame * newgame = client[client[i].opponent].game;
+										int opponent = client[i].opponent;
+										struct SGame * newgame = client[opponent].game;
 										LeaveGame(game, i);
 										printf("Klient %d dolacza do nowej gry\n", i);
 										client[i].game = newgame;
+										client[i].opponent = opponent;
 									}
 								}
 								//SG61_decyzja - opponent decision
