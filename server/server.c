@@ -18,7 +18,7 @@
 //Dlugosc wiadomosci, max liczba klientow, max czas od ostatniej wiadomosci (przekroczenie oznacza usuniecie klienta)
 const int maxn = 15;
 const int maxuser = 100; 
-const double maxcommgap = 1 * 6000;
+const double maxcommgap = 60 * 1000;
 
 //Lista niepobranych przez klienta ruchow przeciwnika (wraz z obsluga)
 struct SMoveList{
@@ -34,7 +34,7 @@ struct SMoveList* NewMoveList(char mess[15])
 	memcpy(list->mess, mess, 15);
 	return list;
 }
-
+ 
 //Pobiera pierwszy ruch z listy, zwraca tresc i usuwa go
 struct SMoveList* GetMoveListElement(struct SMoveList* list, char mess[15])
 {
@@ -144,14 +144,10 @@ int DeleteGame(struct SGame *game, int color)
 			game->playerstatus[color] = 1;
 			if(game->playerstatus[1 - color] == 1)
 			{
-				printf("a\n");
 				ClearMoveList(game->unreadmoves[0]);
-				printf("b\n");
 				ClearMoveList(game->unreadmoves[1]);
-				printf("c\n");
 				printf("Zwalniam gre\n");
 				free(game);
-				printf("d\n");
 				return 0;
 			}
 			return 1;
@@ -432,7 +428,7 @@ int UnpackMessage(int i, char* mess)
 	//Informacyjne CI
 	if(strcmp(types[0], messtype) == 0)
 	{
-		printf("Rodzaj wiadomosci: INFORMACYJNA\n");
+		//printf("Rodzaj wiadomosci: INFORMACYJNA\n");
 
 		switch(code)
 		{
@@ -487,7 +483,7 @@ int UnpackMessage(int i, char* mess)
 			//CI30 - still here (wysylana przez klienta, zeby podtrzymac komunikacje i nie zostac usunietym)
 			case 30:
 			{
-				printf("Klient %d still here\n", i);
+				//printf("Klient %d still here\n", i);
 				
 				//SI30 - Accept still here
 				PrepareServerMessage(i, "SI30", 4);
@@ -546,7 +542,7 @@ int UnpackMessage(int i, char* mess)
 	//Gra CG
 	if(strcmp(types[1], messtype) == 0)
 	{
-		printf("Rodzaj wiadomosci: GRA\n");
+		//printf("Rodzaj wiadomosci: GRA\n");
 		
 		//Czy klient zalogowany
 		if(client[i].loggedin == 1)
@@ -853,10 +849,12 @@ int UnpackMessage(int i, char* mess)
 									}
 									else
 									{
-										struct SGame * newgame = client[client[i].opponent].game;
+										int opponent = client[i].opponent;
+										struct SGame * newgame = client[opponent].game;
 										LeaveGame(game, i);
 										printf("Klient %d dolacza do nowej gry\n", i);
 										client[i].game = newgame;
+										client[i].opponent = opponent;
 									}
 								}
 								//SG61_decyzja - opponent decision
@@ -923,7 +921,7 @@ int UnpackMessage(int i, char* mess)
 	//Bledy CE
 	if(strcmp(types[2], messtype) == 0)
 	{
-		printf("Rodzaj wiadomosci: ERROR\n");
+		//printf("Rodzaj wiadomosci: ERROR\n");
 		
 		switch(code)
 		{
@@ -1122,7 +1120,7 @@ int main(int argc, char** argv)
 				}
 			}
 		}
-		printf("end\n");
+		printf("end\n\n");
 	}
 	close(sfd);
 	return EXIT_SUCCESS;
