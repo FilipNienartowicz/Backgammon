@@ -18,7 +18,7 @@
 //Dlugosc wiadomosci, max liczba klientow, max czas od ostatniej wiadomosci (przekroczenie oznacza usuniecie klienta)
 const int maxn = 15;
 const int maxuser = 100; 
-const double maxcommgap = 1 * 6000;
+const double maxcommgap = 60 * 1000;
 
 //Lista niepobranych przez klienta ruchow przeciwnika (wraz z obsluga)
 struct SMoveList{
@@ -34,7 +34,7 @@ struct SMoveList* NewMoveList(char mess[15])
 	memcpy(list->mess, mess, 15);
 	return list;
 }
-
+ 
 //Pobiera pierwszy ruch z listy, zwraca tresc i usuwa go
 struct SMoveList* GetMoveListElement(struct SMoveList* list, char mess[15])
 {
@@ -54,11 +54,11 @@ struct SMoveList* AddMoveToList(struct SMoveList* list, struct SMoveList* elemen
 {
 	if(list != NULL)
 	{
-		struct SMoveList* pop;
-		while(list!=NULL)
+		struct SMoveList* pop, *act = list;
+		while(act!=NULL)
 		{
-			pop = list;
-			list = list->next;
+			pop = act;
+			act = act->next;
 		}
 		pop->next = element;
 		return list;
@@ -143,14 +143,10 @@ int DeleteGame(struct SGame *game, int color)
 			game->playerstatus[color] = 1;
 			if(game->playerstatus[1 - color] == 1)
 			{
-				printf("a\n");
 				ClearMoveList(game->unreadmoves[0]);
-				printf("b\n");
 				ClearMoveList(game->unreadmoves[1]);
-				printf("c\n");
 				printf("Zwalniam gre\n");
 				free(game);
-				printf("d\n");
 				return 0;
 			}
 			return 1;
@@ -431,7 +427,7 @@ int UnpackMessage(int i, char* mess)
 	//Informacyjne CI
 	if(strcmp(types[0], messtype) == 0)
 	{
-		printf("Rodzaj wiadomosci: INFORMACYJNA\n");
+		//printf("Rodzaj wiadomosci: INFORMACYJNA\n");
 
 		switch(code)
 		{
@@ -486,7 +482,7 @@ int UnpackMessage(int i, char* mess)
 			//CI30 - still here (wysylana przez klienta, zeby podtrzymac komunikacje i nie zostac usunietym)
 			case 30:
 			{
-				printf("Klient %d still here\n", i);
+				//printf("Klient %d still here\n", i);
 				
 				//SI30 - Accept still here
 				PrepareServerMessage(i, "SI30", 4);
@@ -545,7 +541,7 @@ int UnpackMessage(int i, char* mess)
 	//Gra CG
 	if(strcmp(types[1], messtype) == 0)
 	{
-		printf("Rodzaj wiadomosci: GRA\n");
+		//printf("Rodzaj wiadomosci: GRA\n");
 		
 		//Czy klient zalogowany
 		if(client[i].loggedin == 1)
@@ -922,7 +918,7 @@ int UnpackMessage(int i, char* mess)
 	//Bledy CE
 	if(strcmp(types[2], messtype) == 0)
 	{
-		printf("Rodzaj wiadomosci: ERROR\n");
+		//printf("Rodzaj wiadomosci: ERROR\n");
 		
 		switch(code)
 		{
